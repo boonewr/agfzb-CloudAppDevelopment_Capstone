@@ -9,6 +9,7 @@ import requests
 
 
 def main(param_dict):
+    print("Connecting to Cloudant")
     """Main Function
 
     Args:
@@ -32,4 +33,5 @@ def main(param_dict):
         print("connection error")
         return {"error": err}
 
+    print({"dbs": client.all_dbs()})
     return {"dbs": client.all_dbs()}
