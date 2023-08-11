@@ -2,8 +2,8 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
-# from .models import related models
-# from .restapis import related methods
+from .restapis import get_all_dealerships
+# from .models import CarDealer
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from datetime import datetime
@@ -79,19 +79,19 @@ def registration_request(request):
             context['message'] = "User already exists."
             return render(request, 'djangoapp/registration.html', context)
 
-# Update the `get_dealerships` view to render the index page with a list of dealerships
+# # Update the `get_dealerships` view to render the index page with a list of dealerships
+# def get_dealerships(request):
+#     context = {}
+#     if request.method == "GET":
+#         return render(request, 'djangoapp/index.html', context)
+    
+# def get_dealerships(request):
 
+#     dealerships = get_all_dealerships(url, **kwargs)
+#     dealer_names = ' '.join([dealer.short_name for dealer in dealerships])
+#     return dealer_names
 
 def get_dealerships(request):
-    context = {}
-    if request.method == "GET":
-        return render(request, 'djangoapp/index.html', context)
-
-
-# Create a `get_dealer_details` view to render the reviews of a dealer
-# def get_dealer_details(request, dealer_id):
-# ...
-
-# Create a `add_review` view to submit a review
-# def add_review(request, dealer_id):
-# ...
+    dealerships = get_all_dealerships(None)
+    dealer_names = ' '.join([dealer.short_name for dealer in dealerships])
+    return HttpResponse(dealer_names)
