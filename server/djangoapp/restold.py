@@ -8,14 +8,6 @@ from requests.auth import HTTPBasicAuth
 # e.g., response = requests.get(url, params=params, headers={'Content-Type': 'application/json'},
 #                                     auth=HTTPBasicAuth('apikey', api_key))
 
-
-params2 = {
-    "IAM_API_KEY": "P8K1nSzkul_xpk0SBGtS0ut2o05tCXwqSXoVUcMm7IIr",
-    "COUCH_URL": "https://95ec5f07-d167-410b-a7a8-779aa8b7d5d5-bluemix.cloudantnosqldb.appdomain.cloud",
-    "COUCH_USERNAME": "95ec5f07-d167-410b-a7a8-779aa8b7d5d5-bluemix"
-}
-
-
 def get_request(url, **kwargs):
     print(kwargs)
     print("GET from {} ".format(url))
