@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
-from .restapis import get_all_dealerships
+from .restapis import get_all_dealerships, get_dealer_reviews, post_dealer_review
 # from .models import CarDealer
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
@@ -92,6 +92,46 @@ def registration_request(request):
 #     return dealer_names
 
 def get_dealerships(request):
+    context = {}
+    context_object_name = 'dealerships'
     dealerships = get_all_dealerships(None)
-    dealer_names = ' '.join([dealer.short_name for dealer in dealerships])
-    return HttpResponse(dealer_names)
+    # dealer_names = ' '.join([dealer.short_name for dealer in dealerships])
+    context.update({'dealerships': dealerships})
+    # return HttpResponse(dealer_names)
+    return render(request, 'djangoapp/index.html', context)
+
+# Create a `get_dealer_details` view to render the reviews of a dealer
+def get_dealer_details(request, dealer_id):
+    context = {}
+
+    context_object_name = 'dealer_id'
+    dealer_id = dealer_id
+
+    context_object_name = 'reviews'
+    reviews = get_dealer_reviews(None, dealer_id)
+    context.update({'reviews': reviews})
+    print("context:", context)
+    print("reviews:", reviews)
+    review_text = ' '.join([review.review for review in reviews])
+    # return HttpResponse(review_text)
+    return render(request, 'djangoapp/dealer_details.html', context)
+    
+def add_review(request, dealer_id):
+    review = {}
+    review['id'] = 10
+    review['name'] = "name"
+    print("review['name']:", review['name'])
+    review["dealership"] = dealer_id
+    review["review"] = "heat death at the end of the universe"
+    review["purchase"] = True
+    review["purchase_date"] = datetime.utcnow().isoformat()
+    review["car_make"] = "Audi"
+    review["car_model"] = "A3"
+    review["car_year"] = 2020
+
+    json_payload = {}
+    json_payload["review"] = review
+    # result = post_dealer_review(json_payload)
+    result = post_dealer_review(review)
+    print(result)
+    return redirect("djangoapp:dealer_details", dealer_id=dealer_id)
