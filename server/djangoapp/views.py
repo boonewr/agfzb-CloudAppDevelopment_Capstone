@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 from .restapis import get_all_dealerships, get_dealer_reviews, post_dealer_review
-# from .models import CarDealer
+from .models import CarMake, CarModel
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from datetime import datetime
@@ -104,34 +104,91 @@ def get_dealerships(request):
 def get_dealer_details(request, dealer_id):
     context = {}
 
-    context_object_name = 'dealer_id'
-    dealer_id = dealer_id
+    # context_object_name = 'dealer_id'
+    # context_object_name = 'dealer_name'
+    # dealer_id = dealer_id
+
+    # dealer_name = (dealer.id == dealer_id for dealer in get_all_dealerships(None))
+    for dealer in get_all_dealerships(None):
+        if dealer.id == dealer_id:
+            dealer_name = dealer.full_name
 
     context_object_name = 'reviews'
     reviews = get_dealer_reviews(None, dealer_id)
     context.update({'reviews': reviews})
-    print("context:", context)
-    print("reviews:", reviews)
+    context.update({'dealer_id': dealer_id})
+    context.update({'dealer_name': dealer_name})
     review_text = ' '.join([review.review for review in reviews])
-    # return HttpResponse(review_text)
     return render(request, 'djangoapp/dealer_details.html', context)
     
-def add_review(request, dealer_id):
-    review = {}
-    review['id'] = 10
-    review['name'] = "name"
-    print("review['name']:", review['name'])
-    review["dealership"] = dealer_id
-    review["review"] = "heat death at the end of the universe"
-    review["purchase"] = True
-    review["purchase_date"] = datetime.utcnow().isoformat()
-    review["car_make"] = "Audi"
-    review["car_model"] = "A3"
-    review["car_year"] = 2020
+def write_review(request, dealer_id):
+    context = {}
 
-    json_payload = {}
-    json_payload["review"] = review
-    # result = post_dealer_review(json_payload)
-    result = post_dealer_review(review)
-    print(result)
-    return redirect("djangoapp:dealer_details", dealer_id=dealer_id)
+    dealer_name = ""
+    for dealer in get_all_dealerships(None):
+        if dealer.id == dealer_id:
+            dealer_name = dealer.full_name
+    context.update({'dealer_name': dealer_name})
+    context.update({'dealer_id': dealer_id})
+
+    print(dealer_name)
+
+    return render(request, "djangoapp/add_review.html", context)
+
+def add_review(request, dealer_id):
+
+    if request.method == "GET":
+        context = {}
+
+        dealer_name = ""
+        for dealer in get_all_dealerships(None):
+            if dealer.id == dealer_id:
+                dealer_name = dealer.full_name
+        context.update({'dealer_name': dealer_name})
+        context.update({'dealer_id': dealer_id})
+
+        cars = CarModel.objects.filter(dealerId=dealer_id)
+        context.update({'cars': cars})
+
+        return render(request, "djangoapp/add_review.html", context)
+
+    if request.method == "POST":
+        review = {}
+        # review['id'] = 10
+        # review['name'] = "name"
+        # print("review['name']:", review['name'])
+        # review["dealership"] = dealer_id
+        # review["review"] = "heat death at the end of the universe"
+        # review["purchase"] = True
+        # review["purchase_date"] = datetime.utcnow().isoformat()
+        # review["car_make"] = "Audi"
+        # review["car_model"] = "A3"
+        # review["car_year"] = 2020
+
+        json_payload = {}
+        json_payload["review"] = review
+        # result = post_dealer_review(json_payload)
+        # result = post_dealer_review(review)
+        # print(result)
+
+        print("request.POST:", request.POST)
+        review['id'] = 10
+        review['name'] = request.POST['name_text']
+        review["dealership"] = dealer_id
+        review["review"] = request.POST['review_text']
+        if request.POST['purchasecheck'] == "Purchased":
+            review["purchase"] = True
+        else:
+            review["purchase"] = False
+        # review["purchase_date"] = datetime(request.POST['purchasedate']).isoformat()
+        review["purchase_date"] = datetime.strptime(request.POST['purchasedate'], "%Y-%m-%d").isoformat()
+        car = CarModel.objects.filter(dealerId=dealer_id)[int(request.POST['purchased_car']) - 1]
+        review["car_make"] = car.carMake.name
+        review["car_model"] = car.name
+        review["car_year"] = car.year.strftime("%Y")
+        print(review)
+
+        result = post_dealer_review(review)
+        print(result)
+
+        return redirect("djangoapp:dealer_details", dealer_id=dealer_id)

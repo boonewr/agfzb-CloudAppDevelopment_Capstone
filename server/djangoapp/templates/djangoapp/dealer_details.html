@@ -18,7 +18,6 @@
             </div>
             <ul class="nav navbar-nav navbar-right">
                 <li>
-                    <a class="btn btn-link" href="#">Test</a>
                     <a class="btn btn-link" href="{% url 'djangoapp:index' %}">Home</a>
                     <a class="btn btn-link" href="{% url 'djangoapp:about' %}">About</a>
                     <a class="btn btn-link" href="{% url 'djangoapp:contact' %}">Contact Us</a>
@@ -35,14 +34,13 @@
                         {% csrf_token %}
                         <div class="input-group">
                             <input type="text" class="form-control" placeholder="Username" name="username">
-                            <input type="password" class="form-control" placeholder="Username" name="psw">
+                            <input type="password" class="form-control" placeholder="Password" name="psw">
                             <button class="btn btn-primary" type="submit">Login</button>
                             <a class="btn btn-link" href="{% url 'djangoapp:registration' %}">Sign Up</a>
                         </div>
                     </form>
                 </li>
                 {% endif %}
-
             </ul>
         </div>
     </nav>
@@ -50,27 +48,39 @@
 
     <!-- Add reviews as cards -->
     <div class="container">
-        <h1>Dealership Reviews</h1>
+        <br>
+        <br>
+        <h1>Reviews for <b>{{ dealer_name }}:</b></h1>
+        <br>
+        <br>
         <div class="card-deck">
             {% for review in reviews %}
             <div class="card" style="width: 36rem;">
-                <div class="card-body bg-light">
-                    <h5 class="card-title">
-                        {{ review.name }}
-                        <span class="text-success">{{ review.dealer }}</span>
-                    </h5>
-                    <p class="card-subtitle mb-2 text-muted">{{ review.car_make }} {{ review.car_model }} {{ review.car_year }}</p>
-                    <p class="card-text">"{{ review.review }}"</p>
-                    <p class="card-text">{{ review.sentiment }}</p>
-                    </h6>
 
+                {% if review.sentiment == 'positive' %}
+                <img class="card-img-left" style="width: 3rem;" src="{{MEDIA_URL}}/emoji/positive.png">
+                {% elif review.sentiment == 'negative' %}
+                <img class="card-img-left" style="width: 3rem;" src="{{MEDIA_URL}}/emoji/negative.png">
+                {% else %}
+                <img class="card-img-left" style="width: 3rem;" src="{{MEDIA_URL}}/emoji/neutral.png">
+                {% endif %}
+
+                <div class="card-body">
+                    {% if review.purchase %}
+                    <h5 class="card-title">{{ review.car_make }} {{ review.car_model }} {{ review.car_year }}</h5>
+                    <p class="card-text">"{{ review.review }}"</p>
+                    {% else %}
+                    <h5 class="card-title">"{{ review.review }}"</h5>
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}
         </div>
     </div>
 
-    <a class="btn btn-link" href="{% url 'djangoapp:add_review' 15 %}" method="post">Add Review</a>
+    {% if user.is_authenticated %}
+        <a class="btn btn-link" href="{% url 'djangoapp:add_review' dealer_id %}" method="get">Add Review</a>
+    {% endif %}
 </body>
 
 </html>

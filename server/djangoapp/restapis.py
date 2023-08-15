@@ -104,17 +104,6 @@ def get_request(url, params, **kwargs):
 def analyze_review_sentiments(review):
     url = "https://api.us-east.natural-language-understanding.watson.cloud.ibm.com/instances/4daf55dd-5712-4eb1-91ea-9c427ae6b604"
 
-    # params = dict()
-    # params["text"] = kwargs["text"]
-    # params["version"] = kwargs["version"]
-    # params["features"] = kwargs["features"]
-    # params["return_analyzed_text"] = kwargs["return_analyzed_text"]
-    # response = requests.get(url, params=params, headers={'Content-Type': 'application/json'},
-    #                                 auth=HTTPBasicAuth('apikey', api_key))
-    # json_data = json.loads(response.text)
-
-    # print(json_data)
-    # return json_data
 
     authenticator = IAMAuthenticator(api_key)
 
@@ -135,8 +124,12 @@ def analyze_review_sentiments(review):
     ).get_result()
 
     # print(json.dumps(response, indent=2))
-    # print(response)
-    sentiment_label = response["keywords"][0]["sentiment"]["label"]
+    print(response, "\n")
+    if response["keywords"]:
+        sentiment_label = response["keywords"][0]["sentiment"]["label"] 
+    else:
+        sentiment_label = "error"
+        print("error getting sentiment")
     return sentiment_label
 
 
