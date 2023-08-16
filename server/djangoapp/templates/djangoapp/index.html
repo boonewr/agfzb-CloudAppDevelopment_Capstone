@@ -23,15 +23,14 @@
     <nav class="navbar navbar-light bg-light">
         <div class="container-fluid">
             <div class="navbar-header">
-                <a class="navbar-brand" href="#">Cars Home</a>
+                <b><a class="navbar-brand" href="{% url 'djangoapp:index' %}" style="font-size: 2em;">Cars Home</a></b>
             </div>
             <ul class="nav navbar-nav navbar-right">
                 <li>
-                    <a class="btn btn-link" href="#">Test</a>
+                    <a class="btn btn-link" href="{% url 'djangoapp:index' %}">Home</a>
                     <a class="btn btn-link" href="{% url 'djangoapp:about' %}">About</a>
                     <a class="btn btn-link" href="{% url 'djangoapp:contact' %}">Contact Us</a>
                 </li>
-
                 {% if user.is_authenticated %}
                 <li>
                     <a class="btn btn-link" href="#">{{ user.first_name }}({{ user.username }})</a>
@@ -43,18 +42,16 @@
                         {% csrf_token %}
                         <div class="input-group">
                             <input type="text" class="form-control" placeholder="Username" name="username">
-                            <input type="password" class="form-control" placeholder="Username" name="psw">
+                            <input type="password" class="form-control" placeholder="Password" name="psw">
                             <button class="btn btn-primary" type="submit">Login</button>
                             <a class="btn btn-link" href="{% url 'djangoapp:registration' %}">Sign Up</a>
                         </div>
                     </form>
                 </li>
                 {% endif %}
-
             </ul>
         </div>
     </nav>
-    <!--Add a dealer table here -->
 
     <script>
         $(function () {
@@ -62,8 +59,10 @@
         })
     </script>
 
+    <br>
+    <h1 style="margin-left: 2.5%;"><b>Dealership Network</b></h1>
 
-    <table class="table" id="table" data-filter-control="true">
+    <table class="table" id="table" data-filter-control="true" style="margin: 2.5%; max-width: 95%;">
         <thead>
             <tr>
                 <th data-field="id">ID</th>
@@ -87,33 +86,6 @@
             {% endfor %}
         </tbody>
     </table>
-
-
-
-
-    <div class="container">
-        <h1>Dealership Network</h1>
-        <div class="card-columns">
-            {% for dealer in dealerships %}
-            <div class="card">
-                <div class="card-body bg-light">
-                    <h5 class="card-title">
-                        <a class="btn btn-link" href="{% url 'djangoapp:dealer_details' dealer.id %}" method="post">
-                            {{ dealer.full_name }}
-                        </a>
-                        <!-- <span class="text-success">{{ review.dealer }}</span> -->
-                    </h5>
-                    <p class="card-subtitle mb-2 text-muted">{{ dealer.address }}, {{ dealer.city }}, {{ dealer.st }}
-                    </p>
-                    <!-- <p class="card-text">"{{ review.review }}"</h6> -->
-
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-
-
 
 </body>
 
